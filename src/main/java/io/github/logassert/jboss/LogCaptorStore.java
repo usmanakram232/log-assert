@@ -56,9 +56,13 @@ public final class LogCaptorStore {
   /**
    * Returns an unmodifiable point-in-time snapshot of all stored entries, oldest first.
    *
+   * <p>Synchronized against {@link #append} and {@link #clear} to ensure the returned list
+   * reflects a consistent state and never contains entries that were concurrently evicted by a
+   * {@code clear()} call in progress.
+   *
    * @return immutable copy of current entries; never {@code null}
    */
-  public List<LogEntry> snapshot() {
+  public synchronized List<LogEntry> snapshot() {
     return List.copyOf(entries);
   }
 

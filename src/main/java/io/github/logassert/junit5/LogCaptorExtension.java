@@ -4,6 +4,7 @@ import io.github.logassert.core.LogCaptor;
 import io.github.logassert.core.LogEntry;
 import io.github.logassert.jboss.LogCaptorImpl;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -321,11 +322,27 @@ public final class LogCaptorExtension
       for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
         if (field.isAnnotationPresent(InjectLogCaptor.class)
             && LogCaptor.class.isAssignableFrom(field.getType())) {
-          field.setAccessible(true);
           try {
+            field.setAccessible(true);
             field.set(testInstance, captor);
+          } catch (InaccessibleObjectException e) {
+            throw new LogCaptorConfigurationException(
+                "[log-assert] Cannot inject @InjectLogCaptor field '"
+                    + field.getName()
+                    + "' in "
+                    + clazz.getName()
+                    + ". The field's package is not open to the log-assert module. "
+                    + "Add the following to your module-info.java: "
+                    + "  opens "
+                    + clazz.getPackageName()
+                    + " to io.github.logassert.junit5;"
+                    + " — or add the JVM flag: "
+                    + "--add-opens "
+                    + clazz.getPackageName().replace('.', '/')
+                    + "=io.github.logassert.junit5",
+                e);
           } catch (IllegalAccessException e) {
-            throw new RuntimeException(
+            throw new LogCaptorConfigurationException(
                 "[log-assert] Cannot inject @InjectLogCaptor field: " + field.getName(), e);
           }
         }
