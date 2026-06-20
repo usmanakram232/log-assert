@@ -7,7 +7,7 @@
 
   <groupId>io.github.usmanakram232</groupId>
   <artifactId>log-assert</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>log-assert</name>
@@ -15,6 +15,29 @@
     In-memory log capture with AssertJ-style assertions for JUnit 5.
     JBoss Log Manager backend — designed for Quarkus test environments.
   </description>
+  <url>https://github.com/usmanakram232/log-assert</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>usmanakram232</id>
+      <name>Usman Akram</name>
+      <url>https://github.com/usmanakram232</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/usmanakram232/log-assert.git</connection>
+    <developerConnection>scm:git:ssh://github.com/usmanakram232/log-assert.git</developerConnection>
+    <url>https://github.com/usmanakram232/log-assert/tree/main</url>
+  </scm>
 
   <properties>
     <java.version>21</java.version>
@@ -124,6 +147,69 @@
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Sources jar — required by Central Portal -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Javadoc jar — required by Central Portal -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <configuration>
+          <doclint>none</doclint>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- GPG signing — required by Central Portal -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.7</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Central Portal publishing plugin -->
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!-- matches the <server id> in ~/.m2/settings.xml -->
+          <publishingServerId>central</publishingServerId>
+          <!-- set to true to auto-release instead of manually reviewing -->
+          <autoPublish>false</autoPublish>
         </configuration>
       </plugin>
 
