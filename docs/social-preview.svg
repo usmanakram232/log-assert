@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <style>
+      text { font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Mono', monospace; }
+      .sans { font-family: -apple-system, 'Segoe UI', 'Inter', Roboto, sans-serif; }
+    </style>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#060d1a"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="nameGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="60%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="pillGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <radialGradient id="glowL" cx="0.22" cy="0.45" r="0.45">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="0.78" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0L0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#grid)" opacity="0.5"/>
+  <rect width="1280" height="640" fill="url(#glowL)"/>
+  <rect width="1280" height="640" fill="url(#glowR)"/>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="5" height="640" fill="url(#pillGrad)"/>
+
+  <!-- ══════════════ LEFT PANEL ══════════════ -->
+
+  <!-- Mini icon: bracket + log lines + checkmark -->
+  <path d="M66 112 L52 112 L52 200 L66 200"
+        fill="none" stroke="url(#pillGrad)" stroke-width="4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="78" y="116" width="44" height="18" rx="4"
+        fill="rgba(34,211,238,0.12)" stroke="#22d3ee" stroke-width="1.2"/>
+  <text x="100" y="129" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">INFO</text>
+  <rect x="130" y="120" width="86" height="10" rx="3" fill="rgba(148,163,184,0.18)"/>
+  <rect x="130" y="120" width="58" height="10" rx="3" fill="rgba(148,163,184,0.1)"/>
+
+  <rect x="78" y="143" width="44" height="18" rx="4"
+        fill="rgba(251,191,36,0.12)" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="100" y="156" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle">WARN</text>
+  <rect x="130" y="147" width="86" height="10" rx="3" fill="rgba(148,163,184,0.18)"/>
+  <rect x="130" y="147" width="74" height="10" rx="3" fill="rgba(148,163,184,0.1)"/>
+
+  <rect x="78" y="170" width="44" height="18" rx="4"
+        fill="rgba(251,113,133,0.12)" stroke="#fb7185" stroke-width="1.2"/>
+  <text x="100" y="183" fill="#fb7185" font-size="10" font-weight="700" text-anchor="middle">ERROR</text>
+  <rect x="130" y="174" width="86" height="10" rx="3" fill="rgba(148,163,184,0.18)"/>
+  <rect x="130" y="174" width="46" height="10" rx="3" fill="rgba(148,163,184,0.1)"/>
+
+  <path d="M228 112 L242 112 L242 200 L228 200"
+        fill="none" stroke="url(#pillGrad)" stroke-width="4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <line x1="258" y1="156" x2="280" y2="156"
+        stroke="#334155" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="280,151 292,156 280,161" fill="#334155"/>
+
+  <circle cx="318" cy="156" r="26"
+          fill="rgba(52,211,153,0.1)" stroke="#34d399" stroke-width="2.5"/>
+  <path d="M305 156 L316 167 L332 145"
+        fill="none" stroke="#34d399" stroke-width="3.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Library name -->
+  <text x="52" y="264" fill="url(#nameGrad)" font-size="76" font-weight="700"
+        letter-spacing="-2">log-assert</text>
+
+  <!-- Tagline -->
+  <text x="54" y="306" class="sans" fill="#64748b" font-size="19">
+    In-memory log capture · AssertJ DSL · JUnit 5
+  </text>
+
+  <!-- Rule -->
+  <line x1="54" y1="330" x2="594" y2="330" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Feature list -->
+  <circle cx="66" cy="364" r="5" fill="#22d3ee"/>
+  <text x="84" y="370" class="sans" fill="#94a3b8" font-size="16">
+    Fluent chain: atLevel · fromLogger · containingMessage
+  </text>
+
+  <circle cx="66" cy="400" r="5" fill="#34d399"/>
+  <text x="84" y="406" class="sans" fill="#94a3b8" font-size="16">
+    Quarkus-native · @RegisterExtension lifecycle
+  </text>
+
+  <circle cx="66" cy="436" r="5" fill="#a78bfa"/>
+  <text x="84" y="442" class="sans" fill="#94a3b8" font-size="16">
+    Thread-safe ring-buffer · zero network I/O
+  </text>
+
+  <!-- Tech pills row -->
+  <rect x="54"  y="468" width="84"  height="30" rx="15" fill="rgba(34,211,238,0.08)"  stroke="rgba(34,211,238,0.3)"  stroke-width="1.2"/>
+  <text x="96"  y="488" class="sans" fill="#22d3ee" font-size="12" font-weight="600" text-anchor="middle">JUnit 5</text>
+
+  <rect x="146" y="468" width="78"  height="30" rx="15" fill="rgba(52,211,153,0.08)"  stroke="rgba(52,211,153,0.3)"  stroke-width="1.2"/>
+  <text x="185" y="488" class="sans" fill="#34d399" font-size="12" font-weight="600" text-anchor="middle">AssertJ</text>
+
+  <rect x="232" y="468" width="84"  height="30" rx="15" fill="rgba(251,191,36,0.08)"  stroke="rgba(251,191,36,0.3)"  stroke-width="1.2"/>
+  <text x="274" y="488" class="sans" fill="#fbbf24" font-size="12" font-weight="600" text-anchor="middle">Quarkus</text>
+
+  <rect x="324" y="468" width="74"  height="30" rx="15" fill="rgba(251,113,133,0.08)" stroke="rgba(251,113,133,0.3)" stroke-width="1.2"/>
+  <text x="361" y="488" class="sans" fill="#fb7185" font-size="12" font-weight="600" text-anchor="middle">JBoss</text>
+
+  <rect x="406" y="468" width="76"  height="30" rx="15" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.3)" stroke-width="1.2"/>
+  <text x="444" y="488" class="sans" fill="#a78bfa" font-size="12" font-weight="600" text-anchor="middle">Java 21</text>
+
+  <!-- Maven coordinate -->
+  <text x="54" y="572" class="sans" fill="#1e3a5f" font-size="13" font-weight="500">
+    io.github.usmanakram232 : log-assert : 1.0.1
+  </text>
+
+  <!-- GitHub URL -->
+  <text x="54" y="594" class="sans" fill="#1e3a5f" font-size="13">
+    github.com/usmanakram232/log-assert
+  </text>
+
+  <!-- Panel divider -->
+  <line x1="640" y1="30" x2="640" y2="610" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- ══════════════ RIGHT PANEL — code card ══════════════ -->
+  <rect x="668" y="48" width="572" height="552" rx="16"
+        fill="#080e1c" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Chrome bar -->
+  <rect x="668" y="48" width="572" height="46" rx="16" fill="#0a0f1e"/>
+  <rect x="668" y="72" width="572" height="22" fill="#0a0f1e"/>
+  <circle cx="699" cy="71" r="7" fill="rgba(251,113,133,0.65)"/>
+  <circle cx="722" cy="71" r="7" fill="rgba(251,191,36,0.65)"/>
+  <circle cx="745" cy="71" r="7" fill="rgba(52,211,153,0.65)"/>
+  <text x="954" y="77" class="sans" fill="#334155" font-size="11" font-weight="500"
+        text-anchor="middle">OrderServiceTest.java</text>
+
+  <!-- Line number gutter -->
+  <rect x="668" y="94" width="38" height="506" fill="rgba(5,9,20,0.6)"/>
+
+  <!-- Code lines -->
+  <!-- ln 1 -->
+  <text x="687" y="120" fill="#2d3f55" font-size="11" text-anchor="middle">1</text>
+  <text x="720" y="120" fill="#c792ea" font-size="13.5">@ExtendWith</text>
+  <text x="810" y="120" fill="#546e7a" font-size="13.5">(LogCaptorExtension.class)</text>
+
+  <!-- ln 2 -->
+  <text x="687" y="144" fill="#2d3f55" font-size="11" text-anchor="middle">2</text>
+  <text x="720" y="144" fill="#546e7a" font-size="13.5" font-style="italic">class </text>
+  <text x="756" y="144" fill="#82aaff" font-size="13.5" font-weight="600">OrderServiceTest </text>
+  <text x="896" y="144" fill="#546e7a" font-size="13.5">{</text>
+
+  <!-- ln 3 blank -->
+  <text x="687" y="168" fill="#2d3f55" font-size="11" text-anchor="middle">3</text>
+
+  <!-- ln 4 -->
+  <text x="687" y="192" fill="#2d3f55" font-size="11" text-anchor="middle">4</text>
+  <text x="736" y="192" fill="#c792ea" font-size="13.5">@InjectLogCaptor</text>
+
+  <!-- ln 5 -->
+  <text x="687" y="216" fill="#2d3f55" font-size="11" text-anchor="middle">5</text>
+  <text x="736" y="216" fill="#82aaff" font-size="13.5">LogCaptor </text>
+  <text x="806" y="216" fill="#94a3b8" font-size="13.5">logCaptor;</text>
+
+  <!-- ln 6 blank -->
+  <text x="687" y="240" fill="#2d3f55" font-size="11" text-anchor="middle">6</text>
+
+  <!-- ln 7 -->
+  <text x="687" y="264" fill="#2d3f55" font-size="11" text-anchor="middle">7</text>
+  <text x="736" y="264" fill="#c792ea" font-size="13.5">@Test</text>
+
+  <!-- ln 8 -->
+  <text x="687" y="288" fill="#2d3f55" font-size="11" text-anchor="middle">8</text>
+  <text x="736" y="288" fill="#546e7a" font-size="13.5" font-style="italic">void </text>
+  <text x="771" y="288" fill="#22d3ee" font-size="13.5">payment_failure_is_logged</text>
+  <text x="1035" y="288" fill="#546e7a" font-size="13.5">() {</text>
+
+  <!-- ln 9 — highlighted assertThat line -->
+  <rect x="706" y="298" width="514" height="26" rx="4"
+        fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.12)" stroke-width="1"/>
+  <text x="687" y="316" fill="#2d3f55" font-size="11" text-anchor="middle">9</text>
+  <text x="752" y="316" fill="#22d3ee" font-size="13.5" font-weight="600">assertThat</text>
+  <text x="826" y="316" fill="#94a3b8" font-size="13.5">(logCaptor)</text>
+
+  <!-- ln 10 -->
+  <text x="687" y="344" fill="#2d3f55" font-size="11" text-anchor="middle">10</text>
+  <text x="768" y="344" fill="#22d3ee" font-size="13.5">.atLevel</text>
+  <text x="824" y="344" fill="#94a3b8" font-size="13.5">(Level.</text>
+  <text x="872" y="344" fill="#fb7185" font-size="13.5">ERROR</text>
+  <text x="913" y="344" fill="#94a3b8" font-size="13.5">)</text>
+
+  <!-- ln 11 -->
+  <text x="687" y="372" fill="#2d3f55" font-size="11" text-anchor="middle">11</text>
+  <text x="768" y="372" fill="#22d3ee" font-size="13.5">.fromLogger</text>
+  <text x="852" y="372" fill="#94a3b8" font-size="13.5">(OrderService.class)</text>
+
+  <!-- ln 12 -->
+  <text x="687" y="400" fill="#2d3f55" font-size="11" text-anchor="middle">12</text>
+  <text x="768" y="400" fill="#22d3ee" font-size="13.5">.single</text>
+  <text x="818" y="400" fill="#94a3b8" font-size="13.5">()</text>
+
+  <!-- ln 13 -->
+  <text x="687" y="428" fill="#2d3f55" font-size="11" text-anchor="middle">13</text>
+  <text x="768" y="428" fill="#22d3ee" font-size="13.5">.hasFormattedMessageContaining</text>
+  <text x="1036" y="428" fill="#94a3b8" font-size="13.5">(</text>
+  <text x="1045" y="428" fill="#34d399" font-size="13.5">"Payment rejected"</text>
+  <text x="1170" y="428" fill="#94a3b8" font-size="13.5">)</text>
+
+  <!-- ln 14 — highlighted pass line -->
+  <rect x="706" y="440" width="514" height="26" rx="4"
+        fill="rgba(52,211,153,0.06)" stroke="rgba(52,211,153,0.12)" stroke-width="1"/>
+  <text x="687" y="456" fill="#2d3f55" font-size="11" text-anchor="middle">14</text>
+  <text x="768" y="456" fill="#22d3ee" font-size="13.5">.hasThrowable</text>
+  <text x="870" y="456" fill="#94a3b8" font-size="13.5">(IllegalArgumentException.class);</text>
+
+  <!-- ln 15 -->
+  <text x="687" y="484" fill="#2d3f55" font-size="11" text-anchor="middle">15</text>
+  <text x="720" y="484" fill="#546e7a" font-size="13.5">}</text>
+
+  <!-- PASS badge -->
+  <rect x="854" y="506" width="120" height="34" rx="17"
+        fill="rgba(52,211,153,0.12)" stroke="#34d399" stroke-width="1.5"/>
+  <circle cx="876" cy="523" r="6" fill="#34d399"/>
+  <path d="M871 523 L875 527 L882 519" fill="none" stroke="#080e1c"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="905" y="528" class="sans" fill="#34d399" font-size="13" font-weight="700"
+        text-anchor="middle">TEST PASS</text>
+
+  <!-- Bottom tag line on code panel -->
+  <text x="954" y="578" class="sans" fill="#1e3a5f" font-size="12" text-anchor="middle">
+    90 tests · Apache 2.0 · Maven Central
+  </text>
+</svg>
