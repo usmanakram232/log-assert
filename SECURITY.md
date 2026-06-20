@@ -22,7 +22,8 @@ Despite the test-only nature, supply-chain integrity matters. A compromised arti
 
 Please **do not** open a public GitHub issue for security vulnerabilities.
 
-Report privately by emailing: **usman.akram@ginmon.de**
+Report privately by opening a [GitHub Security Advisory](https://github.com/usmanakram232/log-assert/security/advisories/new)
+(GitHub → Security tab → "Report a vulnerability").
 
 Include:
 - Description of the vulnerability and its potential impact
