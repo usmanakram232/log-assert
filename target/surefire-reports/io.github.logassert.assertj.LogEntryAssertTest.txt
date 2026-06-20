@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: io.github.logassert.assertj.LogEntryAssertTest
+-------------------------------------------------------------------------------
+Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.109 s -- in io.github.logassert.assertj.LogEntryAssertTest
