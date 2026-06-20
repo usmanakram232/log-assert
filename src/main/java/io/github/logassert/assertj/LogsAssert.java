@@ -2,6 +2,7 @@ package io.github.logassert.assertj;
 
 import io.github.logassert.core.LogEntry;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.slf4j.event.Level;
@@ -82,7 +83,7 @@ public class LogsAssert extends AbstractAssert<LogsAssert, List<LogEntry>> {
    */
   public LogsAssert withMdcEntry(String key, String value) {
     return new LogsAssert(
-        actual.stream().filter(e -> value.equals(e.mdcContext().get(key))).toList());
+        actual.stream().filter(e -> Objects.equals(value, e.mdcContext().get(key))).toList());
   }
 
   // ── Terminal assertions ───────────────────────────────────────────────────

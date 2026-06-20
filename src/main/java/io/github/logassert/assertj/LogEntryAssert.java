@@ -1,6 +1,7 @@
 package io.github.logassert.assertj;
 
 import io.github.logassert.core.LogEntry;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import org.assertj.core.api.AbstractAssert;
 import org.slf4j.event.Level;
@@ -37,7 +38,7 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
    */
   public LogEntryAssert hasFormattedMessage(String expected) {
     isNotNull();
-    if (!expected.equals(actual.formattedMessage())) {
+    if (!Objects.equals(expected, actual.formattedMessage())) {
       failWithMessage(
           "Expected formattedMessage to be:%n  <%s>%nbut was:%n  <%s>",
           expected, actual.formattedMessage());
@@ -53,7 +54,7 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
    */
   public LogEntryAssert hasFormattedMessageContaining(String substring) {
     isNotNull();
-    if (!actual.formattedMessage().contains(substring)) {
+    if (substring == null || !actual.formattedMessage().contains(substring)) {
       failWithMessage(
           "Expected formattedMessage to contain <%s> but was <%s>",
           substring, actual.formattedMessage());
@@ -89,7 +90,7 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
    */
   public LogEntryAssert hasRawTemplate(String expected) {
     isNotNull();
-    if (!expected.equals(actual.rawTemplate())) {
+    if (!Objects.equals(expected, actual.rawTemplate())) {
       failWithMessage(
           "Expected rawTemplate to be <%s> but was <%s>", expected, actual.rawTemplate());
     }
@@ -138,7 +139,7 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
   public LogEntryAssert hasMdcEntry(String key, String value) {
     isNotNull();
     String actualValue = actual.mdcContext().get(key);
-    if (!value.equals(actualValue)) {
+    if (!Objects.equals(value, actualValue)) {
       failWithMessage(
           "Expected MDC key <%s> to have value <%s> but was <%s>", key, value, actualValue);
     }
@@ -179,7 +180,7 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
       failWithMessage(
           "Expected a throwable with message <%s> but no throwable was captured in entry: %s",
           message, formatEntry(actual));
-    } else if (!message.equals(actual.throwable().message())) {
+    } else if (!Objects.equals(message, actual.throwable().message())) {
       failWithMessage(
           "Expected throwable message to be <%s> but was <%s>",
           message, actual.throwable().message());

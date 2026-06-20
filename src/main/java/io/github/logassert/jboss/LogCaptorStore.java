@@ -45,7 +45,7 @@ public final class LogCaptorStore {
    *
    * @param entry the log entry to store; must not be {@code null}
    */
-  public void append(LogEntry entry) {
+  public synchronized void append(LogEntry entry) {
     entries.addLast(entry);
     if (size.incrementAndGet() > maxEntries) {
       entries.pollFirst();
@@ -63,7 +63,7 @@ public final class LogCaptorStore {
   }
 
   /** Removes all stored entries and resets the size counter to zero. */
-  public void clear() {
+  public synchronized void clear() {
     entries.clear();
     size.set(0);
   }
