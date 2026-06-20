@@ -142,12 +142,30 @@ public final class LogCaptorExtension
     // Inject @InjectLogCaptor fields on the test instance.
     ctx.getTestInstance().ifPresent(instance -> injectFields(instance, captor));
     // @EchoLogs: if requested for this test, temporarily re-attach the console handlers so
-    // that log output is visible on the console during this test.
+    // that log output is visible on the console during this test. Apply minimumLevel to each
+    // handler and store the original level so afterEach can restore it.
     if (hasAnnotation(ctx, EchoLogs.class)) {
       List<java.util.logging.Handler> consoleHandlers = getConsoleHandlers(ctx);
       if (consoleHandlers != null && !consoleHandlers.isEmpty()) {
+        EchoLogs echoLogs =
+            ctx.getTestMethod()
+                .flatMap(m -> AnnotationSupport.findAnnotation(m, EchoLogs.class))
+                .or(
+                    () ->
+                        ctx.getTestClass()
+                            .flatMap(c -> AnnotationSupport.findAnnotation(c, EchoLogs.class)))
+                .orElse(null);
+        java.util.logging.Level julLevel =
+            echoLogs != null
+                ? toJulLevel(echoLogs.minimumLevel())
+                : java.util.logging.Level.ALL;
         java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
-        consoleHandlers.forEach(root::addHandler);
+        for (java.util.logging.Handler h : consoleHandlers) {
+          ctx.getStore(NAMESPACE)
+              .put("echoLogs_handler_level_" + System.identityHashCode(h), h.getLevel());
+          h.setLevel(julLevel);
+          root.addHandler(h);
+        }
       }
     }
   }
@@ -157,26 +175,50 @@ public final class LogCaptorExtension
   @Override
   public void afterEach(ExtensionContext ctx) {
     LogCaptorImpl captor = getCaptor(ctx);
-    // Always reset level overrides first.
-    captor.resetConfiguration();
-    // @EchoLogs: remove the console handlers that were re-attached in beforeEach so that
-    // subsequent tests do not receive console output (unless they also have @EchoLogs).
-    if (hasAnnotation(ctx, EchoLogs.class)) {
-      List<java.util.logging.Handler> consoleHandlers = getConsoleHandlers(ctx);
-      if (consoleHandlers != null && !consoleHandlers.isEmpty()) {
-        java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
-        consoleHandlers.forEach(root::removeHandler);
+    try {
+      // Always reset level overrides first.
+      captor.resetConfiguration();
+      // @FailOnUncheckedError: only fail if ERROR entries exist AND the test itself passed.
+      // If the test already failed for another reason, don't pile on with a second assertion error.
+      // This also means tests that asserted their ERROR entries won't fail here — they should call
+      // logCaptor.clearLogs() after asserting if they want to suppress this check.
+      if (hasAnnotation(ctx, FailOnUncheckedError.class)
+          && ctx.getExecutionException().isEmpty()) {
+        List<LogEntry> errors =
+            captor.getLogs().stream()
+                .filter(e -> e.level() == org.slf4j.event.Level.ERROR)
+                .toList();
+        if (!errors.isEmpty()) {
+          throw new AssertionError(
+              String.format(
+                  "[log-assert] @FailOnUncheckedError: %d ERROR log entr%s present after test"
+                      + " '%s':%n%s%nIf you asserted these errors, call"
+                      + " logCaptor.clearLogs() after your assertions.",
+                  errors.size(),
+                  errors.size() == 1 ? "y" : "ies",
+                  ctx.getDisplayName(),
+                  formatEntries(errors)));
+        }
       }
-    }
-    // @FailOnUncheckedError: fail if any ERROR entries were not consumed by assertions.
-    if (hasAnnotation(ctx, FailOnUncheckedError.class)) {
-      List<LogEntry> errors =
-          captor.getLogs().stream().filter(e -> e.level() == org.slf4j.event.Level.ERROR).toList();
-      if (!errors.isEmpty()) {
-        throw new AssertionError(
-            String.format(
-                "[log-assert] @FailOnUncheckedError: %d ERROR log entr%s were not asserted:%n%s",
-                errors.size(), errors.size() == 1 ? "y" : "ies", formatEntries(errors)));
+    } finally {
+      // Always clean up @EchoLogs handlers to prevent them leaking into subsequent tests,
+      // even if resetConfiguration() or the @FailOnUncheckedError check threw.
+      if (hasAnnotation(ctx, EchoLogs.class)) {
+        List<java.util.logging.Handler> consoleHandlers = getConsoleHandlers(ctx);
+        if (consoleHandlers != null) {
+          java.util.logging.Logger root =
+              java.util.logging.LogManager.getLogManager().getLogger("");
+          for (java.util.logging.Handler h : consoleHandlers) {
+            root.removeHandler(h);
+            java.util.logging.Level originalLevel =
+                (java.util.logging.Level)
+                    ctx.getStore(NAMESPACE)
+                        .get("echoLogs_handler_level_" + System.identityHashCode(h));
+            if (originalLevel != null) {
+              h.setLevel(originalLevel);
+            }
+          }
+        }
       }
     }
   }
@@ -324,5 +366,21 @@ public final class LogCaptorExtension
       base += " (" + e.throwable().simpleClassName() + ")";
     }
     return base;
+  }
+
+  /**
+   * Converts an SLF4J {@link org.slf4j.event.Level} to the equivalent {@link
+   * java.util.logging.Level}.
+   *
+   * <p>Mapping: TRACE→FINEST, DEBUG→FINE, INFO→INFO, WARN→WARNING, ERROR→SEVERE.
+   */
+  private static java.util.logging.Level toJulLevel(org.slf4j.event.Level level) {
+    return switch (level) {
+      case TRACE -> java.util.logging.Level.FINEST;
+      case DEBUG -> java.util.logging.Level.FINE;
+      case INFO -> java.util.logging.Level.INFO;
+      case WARN -> java.util.logging.Level.WARNING;
+      case ERROR -> java.util.logging.Level.SEVERE;
+    };
   }
 }
