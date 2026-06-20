@@ -1,5 +1,8 @@
 # log-assert
 
+> [!WARNING]
+> **Experimental.** This library is under active development. APIs may change between minor versions without notice. Not recommended for production test suites yet — use at your own risk and pin to an exact version.
+
 <p align="center">
   <img src="docs/logo.svg" alt="log-assert logo" width="480"/>
 </p>
