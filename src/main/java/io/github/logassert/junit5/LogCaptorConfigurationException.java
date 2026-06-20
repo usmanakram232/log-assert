@@ -14,6 +14,8 @@ package io.github.logassert.junit5;
  * via {@link java.lang.reflect.Field#setAccessible} will throw {@link
  * java.lang.reflect.InaccessibleObjectException}. The exception message contains the exact {@code
  * opens} directive or {@code --add-opens} JVM flag needed to resolve it.
+ *
+ * @since 1.0.0
  */
 public class LogCaptorConfigurationException extends RuntimeException {
 
@@ -21,6 +23,7 @@ public class LogCaptorConfigurationException extends RuntimeException {
    * Creates a new exception with the given diagnostic message.
    *
    * @param message human-readable description of the misconfiguration
+   * @since 1.0.0
    */
   public LogCaptorConfigurationException(String message) {
     super(message);
@@ -32,6 +35,7 @@ public class LogCaptorConfigurationException extends RuntimeException {
    * @param message human-readable description of the misconfiguration
    * @param cause the underlying exception (e.g. {@link
    *     java.lang.reflect.InaccessibleObjectException})
+   * @since 1.0.0
    */
   public LogCaptorConfigurationException(String message, Throwable cause) {
     super(message, cause);

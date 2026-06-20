@@ -20,6 +20,8 @@ import org.slf4j.event.Level;
  *         .hasSize(1);
  * }
  * }</pre>
+ *
+ * @since 1.0.0
  */
 public interface LogCaptor extends AutoCloseable {
 
@@ -32,6 +34,7 @@ public interface LogCaptor extends AutoCloseable {
    * <p>The list is ordered oldest-first (chronological insertion order).
    *
    * @return immutable snapshot of captured entries; never {@code null}
+   * @since 1.0.0
    */
   List<LogEntry> getLogs();
 
@@ -39,6 +42,8 @@ public interface LogCaptor extends AutoCloseable {
    * Removes all captured log entries.
    *
    * <p>Called automatically by the JUnit 5 extension before each test method to ensure isolation.
+   *
+   * @since 1.0.0
    */
   void clearLogs();
 
@@ -46,6 +51,8 @@ public interface LogCaptor extends AutoCloseable {
    * Restores any log-level overrides that were applied via {@link #withMinLevel(Level)}.
    *
    * <p>Called automatically by the JUnit 5 extension in {@code afterEach}.
+   *
+   * @since 1.0.0
    */
   void resetConfiguration();
 
@@ -56,8 +63,13 @@ public interface LogCaptor extends AutoCloseable {
    * normally configured at a higher level. The original level is restored by {@link
    * #resetConfiguration()}.
    *
+   * <p><strong>Note:</strong> only the <em>first</em> call saves the original level; subsequent
+   * calls update the active level without re-saving, ensuring that {@link #resetConfiguration()}
+   * always restores the level that was in effect <em>before</em> this scope started.
+   *
    * @param level the minimum level to capture
    * @return {@code this} for fluent chaining
+   * @since 1.0.0
    */
   LogCaptor withMinLevel(Level level);
 
@@ -65,6 +77,8 @@ public interface LogCaptor extends AutoCloseable {
    * Detaches from the logging framework and restores original state.
    *
    * <p>Idempotent — safe to call multiple times.
+   *
+   * @since 1.0.0
    */
   @Override
   void close();

@@ -20,6 +20,8 @@ import java.util.List;
  *     .single()
  *     .hasFormattedMessageContaining("payment failed");
  * }</pre>
+ *
+ * @since 1.0.0
  */
 public final class LogCaptorAssertions {
 
@@ -32,6 +34,7 @@ public final class LogCaptorAssertions {
    *
    * @param captor the log captor to assert against
    * @return a new {@code LogsAssert}
+   * @since 1.0.0
    */
   public static LogsAssert assertThat(LogCaptor captor) {
     return new LogsAssert(captor.getLogs());
@@ -45,6 +48,7 @@ public final class LogCaptorAssertions {
    *
    * @param entries the entries to assert against
    * @return a new {@code LogsAssert}
+   * @since 1.0.0
    */
   public static LogsAssert assertThat(List<LogEntry> entries) {
     return new LogsAssert(entries);

@@ -21,6 +21,8 @@ import org.slf4j.event.Level;
  *
  * <p>All failure messages include the actual value so the developer never has to guess what was
  * logged.
+ *
+ * @since 1.0.0
  */
 public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
 

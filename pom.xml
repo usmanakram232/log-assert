@@ -51,6 +51,7 @@
     <junit5.version>5.11.3</junit5.version>
     <jboss.logmanager.version>3.0.6.Final</jboss.logmanager.version>
     <slf4j.jboss.version>2.1.0.Final</slf4j.jboss.version>
+    <quarkus.junit5.version>3.17.7</quarkus.junit5.version>
     <!-- Reproducible builds: timestamp fixed at release commit -->
     <project.build.outputTimestamp>2026-06-20T00:00:00Z</project.build.outputTimestamp>
   </properties>
@@ -91,7 +92,7 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
-      <version>3.17.7</version>
+      <version>${quarkus.junit5.version}</version>
       <optional>true</optional>
       <exclusions>
         <exclusion>
@@ -202,7 +203,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.11.2</version>
         <configuration>
-          <doclint>none</doclint>
+          <doclint>all,-missing</doclint>
         </configuration>
         <executions>
           <execution>

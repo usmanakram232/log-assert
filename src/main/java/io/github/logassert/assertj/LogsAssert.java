@@ -24,6 +24,8 @@ import org.slf4j.event.Level;
  *     .single()
  *     .hasThrowable(SocketTimeoutException.class);
  * }</pre>
+ *
+ * @since 1.0.0
  */
 public class LogsAssert extends AbstractAssert<LogsAssert, List<LogEntry>> {
 

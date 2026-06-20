@@ -207,6 +207,131 @@ class LogCaptorExtensionTest {
     assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(1);
   }
 
+  // ── Test 8: @EchoLogs lifecycle (console handlers re-attached then removed) ──
+
+  @ExtendWith(LogCaptorExtension.class)
+  static class InnerTestEchoLogs {
+    @InjectLogCaptor LogCaptor captor;
+
+    @Test
+    @EchoLogs
+    void echoed_test() {
+      LoggerFactory.getLogger(InnerTestEchoLogs.class).info("echo-me");
+      assertThat(captor.getLogs()).isNotEmpty();
+    }
+
+    @Test
+    void non_echoed_test() {
+      LoggerFactory.getLogger(InnerTestEchoLogs.class).info("no-echo");
+      assertThat(captor.getLogs()).isNotEmpty();
+    }
+  }
+
+  @Test
+  void echo_logs_does_not_break_capture() {
+    SummaryGeneratingListener listener = runInner(InnerTestEchoLogs.class);
+    assertThat(listener.getSummary().getFailures()).as("inner test failures").isEmpty();
+    assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(2);
+  }
+
+  // ── Test 9: @FailOnUncheckedError inherited from superclass ───────────────
+
+  @FailOnUncheckedError
+  static class AbstractBaseWithFailOnUncheckedError {}
+
+  @ExtendWith(LogCaptorExtension.class)
+  static class InnerTestFailOnUncheckedErrorInherited extends AbstractBaseWithFailOnUncheckedError {
+    @InjectLogCaptor LogCaptor captor;
+
+    @Test
+    void logs_error_without_asserting() {
+      LoggerFactory.getLogger(InnerTestFailOnUncheckedErrorInherited.class)
+          .error("inherited-unchecked");
+    }
+  }
+
+  @Test
+  void fail_on_unchecked_error_inherited_from_superclass() {
+    SummaryGeneratingListener listener = runInner(InnerTestFailOnUncheckedErrorInherited.class);
+    assertThat(listener.getSummary().getTestsFailedCount())
+        .as("@FailOnUncheckedError inherited annotation should cause one failure")
+        .isEqualTo(1);
+    String failureMsg = listener.getSummary().getFailures().get(0).getException().getMessage();
+    assertThat(failureMsg).contains("@FailOnUncheckedError");
+  }
+
+  // ── Test 10: @InjectLogCaptor inherited from superclass ───────────────────
+
+  static class AbstractBaseWithInjectedCaptor {
+    @InjectLogCaptor LogCaptor captor;
+  }
+
+  @ExtendWith(LogCaptorExtension.class)
+  static class InnerTestInjectFromSuperclass extends AbstractBaseWithInjectedCaptor {
+    @Test
+    void captor_injected_via_superclass_field() {
+      assertThat(captor).isNotNull();
+      LoggerFactory.getLogger(InnerTestInjectFromSuperclass.class).warn("super-field-injected");
+      assertThat(captor.getLogs()).isNotEmpty();
+    }
+  }
+
+  @Test
+  void inject_log_captor_inherited_from_superclass() {
+    SummaryGeneratingListener listener = runInner(InnerTestInjectFromSuperclass.class);
+    assertThat(listener.getSummary().getFailures()).as("inner test failures").isEmpty();
+    assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(1);
+  }
+
+  // ── Test 11: @PrintLogsOnFailure inherited from superclass ────────────────
+
+  @PrintLogsOnFailure
+  static class AbstractBaseWithPrintLogs {}
+
+  @ExtendWith(LogCaptorExtension.class)
+  static class InnerTestPrintLogsInherited extends AbstractBaseWithPrintLogs {
+    @Test
+    void intentionally_failing_with_inherited_annotation() {
+      LoggerFactory.getLogger(InnerTestPrintLogsInherited.class).error("inherited-print-error");
+      throw new AssertionError("intentional inherited-print failure");
+    }
+  }
+
+  @Test
+  void print_logs_on_failure_inherited_from_superclass() {
+    SummaryGeneratingListener listener = runInner(InnerTestPrintLogsInherited.class);
+    assertThat(listener.getSummary().getTestsFailedCount())
+        .as("the inner test must fail (intentional)")
+        .isEqualTo(1);
+    String failureMsg = listener.getSummary().getFailures().get(0).getException().getMessage();
+    assertThat(failureMsg).contains("intentional inherited-print failure");
+  }
+
+  // ── Test 12: withMinLevel double-call preserves first previousLevel ────────
+
+  @ExtendWith(LogCaptorExtension.class)
+  static class InnerTestWithMinLevelDoubleCall {
+    @InjectLogCaptor LogCaptor captor;
+
+    @Test
+    void double_call_preserves_original_level() {
+      java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
+      java.util.logging.Level originalLevel = root.getLevel();
+      captor.withMinLevel(org.slf4j.event.Level.DEBUG);
+      captor.withMinLevel(org.slf4j.event.Level.TRACE);
+      assertThat(root.getLevel()).isEqualTo(java.util.logging.Level.FINEST);
+      captor.resetConfiguration();
+      assertThat(root.getLevel()).isEqualTo(originalLevel);
+    }
+  }
+
+  @Test
+  void with_min_level_double_call_restores_original_level() {
+    SummaryGeneratingListener listener = runInner(InnerTestWithMinLevelDoubleCall.class);
+    assertThat(listener.getSummary().getFailures()).as("inner test failures").isEmpty();
+    assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(1);
+  }
+
   // ── Launcher helper ────────────────────────────────────────────────────────
 
   private static SummaryGeneratingListener runInner(Class<?> testClass) {

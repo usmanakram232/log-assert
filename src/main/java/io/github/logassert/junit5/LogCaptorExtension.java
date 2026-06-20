@@ -57,6 +57,8 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * </ul>
  *
  * <p>Supports {@link LogCaptor} as a test method parameter via {@link ParameterResolver}.
+ *
+ * @since 1.0.0
  */
 public final class LogCaptorExtension
     implements BeforeAllCallback,
@@ -161,7 +163,7 @@ public final class LogCaptorExtension
         java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
         for (java.util.logging.Handler h : consoleHandlers) {
           ctx.getStore(NAMESPACE)
-              .put("echoLogs_handler_level_" + System.identityHashCode(h), h.getLevel());
+              .put("echoLogs_handler_level_" + consoleHandlers.indexOf(h), h.getLevel());
           h.setLevel(julLevel);
           root.addHandler(h);
         }
@@ -211,7 +213,7 @@ public final class LogCaptorExtension
             java.util.logging.Level originalLevel =
                 (java.util.logging.Level)
                     ctx.getStore(NAMESPACE)
-                        .get("echoLogs_handler_level_" + System.identityHashCode(h));
+                        .get("echoLogs_handler_level_" + consoleHandlers.indexOf(h));
             if (originalLevel != null) {
               h.setLevel(originalLevel);
             }

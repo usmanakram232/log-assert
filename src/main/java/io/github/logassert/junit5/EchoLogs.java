@@ -21,10 +21,16 @@ import org.slf4j.event.Level;
  * @EchoLogs(minimumLevel = Level.DEBUG)
  * class MyTest { ... }
  * }</pre>
+ *
+ * @since 1.0.0
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EchoLogs {
-  /** Minimum level of log entries to echo to the console. Defaults to {@link Level#TRACE}. */
+  /**
+   * Minimum level of log entries to echo to the console. Defaults to {@link Level#TRACE}.
+   *
+   * @since 1.0.0
+   */
   Level minimumLevel() default Level.TRACE;
 }

@@ -17,6 +17,8 @@ import org.slf4j.event.Level;
  * string because the raw SLF4J template is not preserved through that bridge. Use {@link
  * #formattedMessage()} for assertions in all cases; only rely on {@link #rawTemplate()} when you
  * are using an SLF4J implementation that does preserve the template (e.g. Logback).
+ *
+ * @since 1.0.0
  */
 public record LogEntry(
     /** Wall-clock time of the log event. */
