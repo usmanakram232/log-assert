@@ -91,14 +91,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JBoss impl for integration tests -->
-    <dependency>
-      <groupId>org.jboss.logmanager</groupId>
-      <artifactId>jboss-logmanager</artifactId>
-      <version>${jboss.logmanager.version}</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- Route SLF4J through JBoss in integration tests -->
     <dependency>
       <groupId>org.jboss.slf4j</groupId>
