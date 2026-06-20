@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>log-assert — In-memory log capture for JUnit 5</title>
+  <meta name="description" content="log-assert: fluent AssertJ-style log assertions for JUnit 5 and Quarkus. JBoss Log Manager backend."/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f172a;
+      --surface:   #1e293b;
+      --border:    #334155;
+      --cyan:      #22d3ee;
+      --emerald:   #34d399;
+      --amber:     #fbbf24;
+      --rose:      #fb7185;
+      --slate:     #94a3b8;
+      --white:     #f1f5f9;
+      --mono:      'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+      --sans:      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--sans);
+      line-height: 1.7;
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,23,42,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; color: var(--white); }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; gap: 1.8rem; font-size: 0.88rem; color: var(--slate); }
+    .nav-links a { color: var(--slate); transition: color .15s; }
+    .nav-links a:hover { color: var(--white); text-decoration: none; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 860px; margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+    .hero-logo { max-width: 480px; width: 100%; margin-bottom: 2rem; }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700; letter-spacing: -0.03em;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--cyan); }
+
+    .hero p {
+      font-size: 1.1rem; color: var(--slate);
+      max-width: 560px; margin: 0 auto 2rem;
+    }
+
+    .badges { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-bottom: 2.5rem; }
+    .badges img { height: 20px; border-radius: 4px; }
+
+    .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .6rem 1.4rem; border-radius: 8px;
+      font-size: .9rem; font-weight: 600; transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; text-decoration: none; }
+    .btn-primary { background: var(--cyan); color: #0f172a; }
+    .btn-secondary { background: var(--surface); color: var(--white); border: 1px solid var(--border); }
+
+    /* ── SECTIONS ── */
+    section { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+    h2 {
+      font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 1.5rem; color: var(--white);
+    }
+    h2 span { color: var(--cyan); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 .5rem; color: var(--white); }
+
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── WHY CARDS ── */
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
+    .why-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.4rem;
+    }
+    .why-card .icon { font-size: 1.6rem; margin-bottom: .6rem; }
+    .why-card h3 { margin: 0 0 .4rem; font-size: 1rem; }
+    .why-card p { font-size: .88rem; color: var(--slate); margin: 0; }
+
+    /* ── CODE ── */
+    pre {
+      background: #0a0f1e;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: .83rem;
+      line-height: 1.65;
+    }
+    code { font-family: var(--mono); font-size: .85em; }
+    p code, li code {
+      background: rgba(34,211,238,.08);
+      border: 1px solid rgba(34,211,238,.15);
+      border-radius: 4px; padding: .1em .4em;
+    }
+
+    .kw   { color: #c792ea; }
+    .cls  { color: #82aaff; }
+    .ann  { color: var(--amber); }
+    .str  { color: var(--emerald); }
+    .cmt  { color: #546e7a; font-style: italic; }
+    .method { color: var(--cyan); }
+    .lvl-error { color: var(--rose); }
+    .lvl-warn  { color: var(--amber); }
+    .lvl-info  { color: var(--cyan); }
+    .xml-tag   { color: #82aaff; }
+    .xml-attr  { color: var(--amber); }
+    .xml-val   { color: var(--emerald); }
+
+    /* ── COMPAT TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; padding: .65rem 1rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--slate); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+    tr:last-child td { border-bottom: none; }
+    .check { color: var(--emerald); }
+
+    /* ── API REFERENCE ── */
+    .api-block { margin-bottom: 2rem; }
+    .method-list { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+    .method-list li {
+      display: flex; align-items: flex-start; gap: .8rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: .6rem 1rem;
+      font-size: .87rem;
+    }
+    .method-list code { flex-shrink: 0; color: var(--cyan); }
+    .method-list span { color: var(--slate); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: var(--slate);
+      font-size: .85rem;
+    }
+    footer a { color: var(--slate); }
+    footer a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">log<span>-assert</span></span>
+  <div class="nav-links">
+    <a href="#quickstart">Quick Start</a>
+    <a href="#why">Why</a>
+    <a href="#api">API</a>
+    <a href="#compat">Compatibility</a>
+    <a href="https://github.com/usmanakram232/log-assert">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img src="logo.svg" alt="log-assert" class="hero-logo"/>
+
+  <p>
+    In-memory log capture with a fluent AssertJ-style DSL for JUnit 5.
+    Built for <strong>Quarkus</strong> and any <strong>JBoss Log Manager</strong> environment.
+  </p>
+
+  <div class="badges">
+    <img src="https://github.com/usmanakram232/log-assert/actions/workflows/ci.yml/badge.svg" alt="CI"/>
+    <img src="https://img.shields.io/maven-central/v/io.github.usmanakram232/log-assert" alt="Maven Central"/>
+    <img src="https://img.shields.io/maven-central/dt/io.github.usmanakram232/log-assert" alt="Downloads"/>
+    <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0"/>
+    <img src="https://img.shields.io/badge/Java-21%2B-orange" alt="Java 21+"/>
+  </div>
+
+  <div class="cta-row">
+    <a href="#quickstart" class="btn btn-primary">Get Started</a>
+    <a href="https://github.com/usmanakram232/log-assert" class="btn btn-secondary">View on GitHub</a>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- WHY -->
+<section id="why">
+  <h2>Why <span>log-assert</span>?</h2>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="icon">🎯</div>
+      <h3>Fluent DSL</h3>
+      <p>Filter by level, logger, message, or MDC. Chain assertions like you would with AssertJ collections.</p>
+    </div>
+    <div class="why-card">
+      <div class="icon">⚡</div>
+      <h3>Quarkus-native</h3>
+      <p>Handles the JBoss Log Manager reset that breaks handler-based capture in <code>@QuarkusTest</code>.</p>
+    </div>
+    <div class="why-card">
+      <div class="icon">🔒</div>
+      <h3>Zero side-effects</h3>
+      <p>No network I/O, no file writes, no process spawning. Safe to run in any CI environment.</p>
+    </div>
+    <div class="why-card">
+      <div class="icon">🧵</div>
+      <h3>Thread-safe by design</h3>
+      <p>Synchronized ring-buffer. Works with parallel Maven builds and concurrent Surefire execution.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- QUICK START -->
+<section id="quickstart">
+  <h2>Quick <span>Start</span></h2>
+
+  <h3>1 — Add the dependency</h3>
+  <pre><span class="xml-tag">&lt;dependency&gt;</span>
+  <span class="xml-tag">&lt;groupId&gt;</span>io.github.usmanakram232<span class="xml-tag">&lt;/groupId&gt;</span>
+  <span class="xml-tag">&lt;artifactId&gt;</span>log-assert<span class="xml-tag">&lt;/artifactId&gt;</span>
+  <span class="xml-tag">&lt;version&gt;</span><span class="str">1.0.0</span><span class="xml-tag">&lt;/version&gt;</span>
+  <span class="xml-tag">&lt;scope&gt;</span>test<span class="xml-tag">&lt;/scope&gt;</span>
+<span class="xml-tag">&lt;/dependency&gt;</span></pre>
+
+  <h3>2 — Write your first log assertion</h3>
+  <pre><span class="kw">import static</span> <span class="cls">io.github.logassert.assertj.LogCaptorAssertions</span>.<span class="method">assertThat</span>;
+<span class="kw">import</span> <span class="cls">io.github.logassert.core.LogCaptor</span>;
+<span class="kw">import</span> <span class="cls">io.github.logassert.junit5.*</span>;
+
+<span class="ann">@ExtendWith</span>(<span class="cls">LogCaptorExtension</span>.<span class="kw">class</span>)
+<span class="kw">class</span> <span class="cls">OrderServiceTest</span> {
+
+    <span class="ann">@InjectLogCaptor</span>
+    <span class="cls">LogCaptor</span> logCaptor;
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="method">payment_failure_is_logged</span>() {
+        orderService.processPayment(invalidRequest);
+
+        <span class="method">assertThat</span>(logCaptor)
+            .<span class="method">atLevel</span>(<span class="cls">Level</span>.ERROR)
+            .<span class="method">fromLogger</span>(<span class="cls">OrderService</span>.<span class="kw">class</span>)
+            .<span class="method">single</span>()
+            .<span class="method">hasFormattedMessageContaining</span>(<span class="str">"Payment rejected"</span>)
+            .<span class="method">hasThrowable</span>(<span class="cls">IllegalArgumentException</span>.<span class="kw">class</span>);
+    }
+}</pre>
+
+  <h3>Quarkus setup</h3>
+  <p style="margin-bottom:.8rem; color: var(--slate); font-size:.9rem;">
+    Quarkus resets the log manager after the extension class is loaded.
+    Use <code>@RegisterExtension static</code> so the handler installs <em>after</em> that reset:
+  </p>
+  <pre><span class="ann">@QuarkusTest</span>
+<span class="kw">class</span> <span class="cls">PaymentResourceTest</span> {
+
+    <span class="ann">@RegisterExtension</span>                       <span class="cmt">// MUST be static</span>
+    <span class="kw">static</span> <span class="cls">LogCaptorExtension</span> logExt = <span class="cls">LogCaptorExtension</span>.<span class="method">create</span>();
+
+    <span class="ann">@InjectLogCaptor</span>
+    <span class="cls">LogCaptor</span> logCaptor;
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> <span class="method">captures_payment_error</span>() {
+        <span class="method">assertThat</span>(logCaptor).<span class="method">atLevel</span>(<span class="cls">Level</span>.ERROR).<span class="method">isNotEmpty</span>();
+    }
+}</pre>
+</section>
+
+<hr class="divider"/>
+
+<!-- API REFERENCE -->
+<section id="api">
+  <h2><span>API</span> Reference</h2>
+
+  <div class="api-block">
+    <h3>LogsAssert — filters (chainable)</h3>
+    <ul class="method-list">
+      <li><code>atLevel(Level)</code><span>Keep entries at exactly this level</span></li>
+      <li><code>atLevelAtLeast(Level)</code><span>Keep entries at this level or higher severity</span></li>
+      <li><code>fromLogger(Class&lt;?&gt;)</code><span>Keep entries whose logger name starts with the class name</span></li>
+      <li><code>fromLogger(String prefix)</code><span>Keep entries whose logger name starts with prefix</span></li>
+      <li><code>containingMessage(String)</code><span>Keep entries whose formatted message contains the substring</span></li>
+      <li><code>withMdcEntry(String key, String value)</code><span>Keep entries with a matching MDC context value</span></li>
+    </ul>
+  </div>
+
+  <div class="api-block">
+    <h3>LogsAssert — terminal assertions</h3>
+    <ul class="method-list">
+      <li><code>hasSize(int n)</code><span>Assert exactly n entries (failure includes full entry list)</span></li>
+      <li><code>isEmpty()</code><span>Assert no entries captured</span></li>
+      <li><code>isNotEmpty()</code><span>Assert at least one entry captured</span></li>
+    </ul>
+  </div>
+
+  <div class="api-block">
+    <h3>LogsAssert — navigation</h3>
+    <ul class="method-list">
+      <li><code>single()</code><span>Assert exactly one entry → LogEntryAssert</span></li>
+      <li><code>first()</code><span>Assert ≥1 entry → LogEntryAssert for first</span></li>
+      <li><code>last()</code><span>Assert ≥1 entry → LogEntryAssert for last</span></li>
+    </ul>
+  </div>
+
+  <div class="api-block">
+    <h3>LogEntryAssert — single entry</h3>
+    <ul class="method-list">
+      <li><code>hasFormattedMessage(String)</code><span>Exact message match</span></li>
+      <li><code>hasFormattedMessageContaining(String)</code><span>Partial message match</span></li>
+      <li><code>hasFormattedMessageMatching(Pattern)</code><span>Regex match (find, not matches)</span></li>
+      <li><code>hasLevel(Level)</code><span>Exact level assertion</span></li>
+      <li><code>hasLoggerName(String)</code><span>Exact logger name assertion</span></li>
+      <li><code>hasMdcEntry(String key, String value)</code><span>MDC key/value at log time</span></li>
+      <li><code>hasThrowable(Class&lt;?&gt;)</code><span>Throwable type assertion</span></li>
+      <li><code>hasThrowableWithMessage(String)</code><span>Exact throwable message match</span></li>
+      <li><code>hasThrowableWithMessageContaining(String)</code><span>Partial throwable message match</span></li>
+      <li><code>hasNoThrowable()</code><span>Assert no throwable was attached</span></li>
+    </ul>
+  </div>
+
+  <div class="api-block">
+    <h3>Annotations</h3>
+    <ul class="method-list">
+      <li><code>@InjectLogCaptor</code><span>Field injection of LogCaptor; cleared before each test</span></li>
+      <li><code>@EchoLogs(minimumLevel)</code><span>Re-enable console output for a test scope</span></li>
+      <li><code>@FailOnUncheckedError</code><span>Fail if any ERROR entries remain after the test (when test passed)</span></li>
+      <li><code>@PrintLogsOnFailure</code><span>Dump captured logs to stderr when a test fails</span></li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- COMPAT -->
+<section id="compat">
+  <h2><span>Compatibility</span> Matrix</h2>
+  <table>
+    <thead>
+      <tr><th>Dependency</th><th>Minimum</th><th>Tested with</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Java</td><td>21</td><td>21</td></tr>
+      <tr><td>JUnit 5 (junit-jupiter)</td><td>5.10</td><td>5.11.3</td></tr>
+      <tr><td>AssertJ</td><td>3.24</td><td>3.27.7</td></tr>
+      <tr><td>JBoss Log Manager</td><td>3.0</td><td>3.0.6.Final</td></tr>
+      <tr><td>SLF4J</td><td>2.0</td><td>2.0.16</td></tr>
+      <tr><td>Quarkus <em>(optional)</em></td><td>3.0</td><td>3.17.7</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <a href="https://github.com/usmanakram232/log-assert">GitHub</a> ·
+    <a href="https://central.sonatype.com/artifact/io.github.usmanakram232/log-assert">Maven Central</a> ·
+    <a href="https://github.com/usmanakram232/log-assert/blob/main/LICENSE">Apache 2.0</a> ·
+    <a href="https://github.com/usmanakram232/log-assert/blob/main/CHANGELOG.md">Changelog</a>
+  </p>
+  <p style="margin-top:.6rem; font-size:.8rem;">
+    Copyright © 2026 Usman Akram. Released under the Apache License 2.0.
+  </p>
+</footer>
+
+</body>
+</html>

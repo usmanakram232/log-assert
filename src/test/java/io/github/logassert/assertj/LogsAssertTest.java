@@ -149,7 +149,7 @@ class LogsAssertTest {
   void hasSize_fails_forEmptyList_showsNone() {
     assertThatThrownBy(() -> assertThat(List.<LogEntry>of()).hasSize(1))
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("Expected 1 log entries but found 0")
+        .hasMessageContaining("Expected 1 log entry but found 0")
         .hasMessageContaining("(none)");
   }
 
@@ -201,7 +201,7 @@ class LogsAssertTest {
   void single_fails_withAssertionError_whenNoEntries() {
     assertThatThrownBy(() -> assertThat(List.<LogEntry>of()).single())
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("Expected 1 log entries but found 0");
+        .hasMessageContaining("Expected 1 log entry but found 0");
   }
 
   @Test
@@ -211,7 +211,7 @@ class LogsAssertTest {
 
     assertThatThrownBy(() -> assertThat(entries).single())
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("Expected 1 log entries but found 2");
+        .hasMessageContaining("Expected 1 log entry but found 2");
   }
 
   // ── Navigation: first / last ──────────────────────────────────────────────

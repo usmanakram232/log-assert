@@ -169,6 +169,29 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
   }
 
   /**
+   * Asserts that a throwable was captured and its message contains {@code substring}
+   * (case-sensitive).
+   *
+   * @param substring the expected substring within the throwable message
+   * @return {@code this}
+   */
+  public LogEntryAssert hasThrowableWithMessageContaining(String substring) {
+    isNotNull();
+    if (actual.throwable() == null) {
+      failWithMessage(
+          "Expected a throwable with message containing <%s> but no throwable was captured"
+              + " in entry: %s",
+          substring, formatEntry(actual));
+    } else if (actual.throwable().message() == null
+        || !actual.throwable().message().contains(substring)) {
+      failWithMessage(
+          "Expected throwable message to contain <%s> but was <%s>",
+          substring, actual.throwable().message());
+    }
+    return this;
+  }
+
+  /**
    * Asserts that a throwable was captured and its message equals {@code message}.
    *
    * @param message the expected throwable message

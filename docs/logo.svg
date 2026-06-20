@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;display=swap');
+      text { font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; }
+    </style>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#34d399"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="520" height="140" rx="12" fill="url(#bgGrad)"/>
+  <rect width="520" height="140" rx="12" fill="none" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Icon area: bracket + log lines + checkmark -->
+  <!-- Left bracket -->
+  <path d="M 32 38 L 22 38 L 22 102 L 32 102" fill="none" stroke="url(#accentGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Log lines (simulating log entries) -->
+  <!-- Line 1: level badge + text -->
+  <rect x="42" y="42" width="38" height="14" rx="3" fill="rgba(34,211,238,0.15)" stroke="#22d3ee" stroke-width="1"/>
+  <text x="61" y="53" fill="#22d3ee" font-size="8" font-weight="600" text-anchor="middle">INFO</text>
+  <rect x="86" y="44" width="72" height="10" rx="2" fill="rgba(148,163,184,0.12)"/>
+  <rect x="86" y="44" width="52" height="10" rx="2" fill="rgba(148,163,184,0.2)"/>
+
+  <!-- Line 2: level badge + text -->
+  <rect x="42" y="62" width="38" height="14" rx="3" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
+  <text x="61" y="73" fill="#fbbf24" font-size="8" font-weight="600" text-anchor="middle">WARN</text>
+  <rect x="86" y="64" width="72" height="10" rx="2" fill="rgba(148,163,184,0.12)"/>
+  <rect x="86" y="64" width="68" height="10" rx="2" fill="rgba(148,163,184,0.2)"/>
+
+  <!-- Line 3: level badge + text -->
+  <rect x="42" y="82" width="38" height="14" rx="3" fill="rgba(251,113,133,0.15)" stroke="#fb7185" stroke-width="1"/>
+  <text x="61" y="93" fill="#fb7185" font-size="8" font-weight="600" text-anchor="middle">ERROR</text>
+  <rect x="86" y="84" width="72" height="10" rx="2" fill="rgba(148,163,184,0.12)"/>
+  <rect x="86" y="84" width="44" height="10" rx="2" fill="rgba(148,163,184,0.2)"/>
+
+  <!-- Right bracket -->
+  <path d="M 170 38 L 180 38 L 180 102 L 170 102" fill="none" stroke="url(#accentGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Arrow: capture -->
+  <path d="M 192 70 L 212 70" stroke="#475569" stroke-width="2" stroke-dasharray="4,3"/>
+  <polygon points="212,66 220,70 212,74" fill="#475569"/>
+
+  <!-- Assert checkmark circle -->
+  <circle cx="242" cy="70" r="22" fill="rgba(52,211,153,0.1)" stroke="#34d399" stroke-width="2" filter="url(#glow)"/>
+  <path d="M 231 70 L 239 78 L 253 62" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <!-- Divider -->
+  <line x1="284" y1="30" x2="284" y2="110" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Library name -->
+  <text x="306" y="62" fill="white" font-size="32" font-weight="700" letter-spacing="-1">log</text>
+  <text x="306" y="62" fill="url(#accentGrad)" font-size="32" font-weight="700" letter-spacing="-1">
+    <tspan fill="white">log</tspan><tspan fill="#475569">-</tspan><tspan fill="url(#accentGrad)">assert</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="306" y="84" fill="#64748b" font-size="11" font-weight="400">In-memory log capture · AssertJ DSL · JUnit 5</text>
+
+  <!-- Version pill -->
+  <rect x="306" y="94" width="52" height="16" rx="8" fill="rgba(34,211,238,0.1)" stroke="#22d3ee" stroke-width="0.75"/>
+  <text x="332" y="106" fill="#22d3ee" font-size="8.5" font-weight="600" text-anchor="middle">v1.0.0</text>
+
+  <!-- JBoss/Quarkus badge -->
+  <rect x="365" y="94" width="64" height="16" rx="8" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="0.75"/>
+  <text x="397" y="106" fill="#fbbf24" font-size="8.5" font-weight="600" text-anchor="middle">JBoss · Quarkus</text>
+
+</svg>

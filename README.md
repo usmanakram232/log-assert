@@ -1,9 +1,47 @@
 # log-assert
 
+<p align="center">
+  <img src="docs/logo.svg" alt="log-assert logo" width="480"/>
+</p>
+
+<p align="center">
+  <a href="https://github.com/usmanakram232/log-assert/actions/workflows/ci.yml"><img src="https://github.com/usmanakram232/log-assert/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
+  <a href="https://central.sonatype.com/artifact/io.github.usmanakram232/log-assert"><img src="https://img.shields.io/maven-central/v/io.github.usmanakram232/log-assert" alt="Maven Central"/></a>
+  <a href="https://central.sonatype.com/artifact/io.github.usmanakram232/log-assert"><img src="https://img.shields.io/maven-central/dt/io.github.usmanakram232/log-assert" alt="Downloads"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"/></a>
+</p>
+
 In-memory log capture with AssertJ-style assertions for JUnit 5.
 
 Designed for **Quarkus** and any **JBoss Log Manager** environment.  
 SLF4J API + JUnit 5 extension + fluent AssertJ DSL.
+
+---
+
+## Why log-assert?
+
+Other approaches to log assertion in the JBoss/Quarkus ecosystem:
+
+| Approach | Problem |
+|----------|---------|
+| Logback `ListAppender` | Verbose setup per test; no DSL; does not work with JBoss Log Manager |
+| Manual `java.util.logging.Handler` | Boilerplate; you write all the assertion logic yourself |
+| Quarkus built-in log capture | Quarkus-only; no standalone Java support; no fluent DSL |
+
+`log-assert` is the only library offering a **fluent AssertJ-style DSL over JBoss Log Manager events** with full Quarkus lifecycle awareness — works in plain JUnit 5 tests and `@QuarkusTest` alike.
+
+---
+
+## Compatibility
+
+| Dependency | Minimum version |
+|-----------|----------------|
+| Java | 21 |
+| JUnit 5 (`junit-jupiter`) | 5.10+ |
+| AssertJ | 3.24+ |
+| JBoss Log Manager | 3.0+ |
+| SLF4J | 2.0+ |
+| Quarkus *(optional)* | 3.x |
 
 ---
 
@@ -15,7 +53,7 @@ SLF4J API + JUnit 5 extension + fluent AssertJ DSL.
 <dependency>
   <groupId>io.github.usmanakram232</groupId>
   <artifactId>log-assert</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -157,8 +195,10 @@ were not asserted on. This is a safety net to catch unexpected error logging.
 class StrictServiceTest { ... }
 ```
 
-> The check fires *after* the test body. If the test body already threw an `AssertionError`, the
-> `@FailOnUncheckedError` failure is reported as a *separate* failure.
+> The check fires in `afterEach` **only when the test itself passed**. If the test body already
+> threw an exception or `AssertionError`, `@FailOnUncheckedError` is suppressed to avoid masking
+> the original failure. If you asserted ERROR entries in the test body, call `logCaptor.clearLogs()`
+> after your assertions to prevent a spurious `@FailOnUncheckedError` failure.
 
 ---
 

@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Test (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '21' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build, test, check formatting
+        run: mvn --batch-mode verify fmt:check -P '!release'

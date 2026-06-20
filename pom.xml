@@ -51,6 +51,8 @@
     <junit5.version>5.11.3</junit5.version>
     <jboss.logmanager.version>3.0.6.Final</jboss.logmanager.version>
     <slf4j.jboss.version>2.1.0.Final</slf4j.jboss.version>
+    <!-- Reproducible builds: timestamp fixed at release commit -->
+    <project.build.outputTimestamp>2026-06-20T00:00:00Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
@@ -132,10 +134,39 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <release>${java.version}</release>
           <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+
+      <!-- Enforce minimum Java and Maven versions -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[21,)</version>
+                  <message>Java 21 or higher is required to build log-assert.</message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9,)</version>
+                  <message>Maven 3.9 or higher is required.</message>
+                </requireMavenVersion>
+                <requireReleaseDeps>
+                  <onlyWhenRelease>true</onlyWhenRelease>
+                </requireReleaseDeps>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -183,36 +214,6 @@
         </executions>
       </plugin>
 
-      <!-- GPG signing — required by Central Portal -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.2.7</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Central Portal publishing plugin -->
-      <plugin>
-        <groupId>org.sonatype.central</groupId>
-        <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.11.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <!-- matches the <server id> in ~/.m2/settings.xml -->
-          <publishingServerId>central</publishingServerId>
-          <!-- set to true to auto-release instead of manually reviewing -->
-          <autoPublish>false</autoPublish>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>com.spotify.fmt</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
@@ -221,5 +222,45 @@
 
     </plugins>
   </build>
+
+  <!-- GPG signing + Central publishing — only active with -Prelease -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+
+          <!-- GPG signing — required by Central Portal -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Central Portal publishing plugin -->
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.11.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>false</autoPublish>
+            </configuration>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

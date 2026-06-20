@@ -34,6 +34,20 @@ public class LogsAssert extends AbstractAssert<LogsAssert, List<LogEntry>> {
   // ── Filters — each returns a new LogsAssert over a narrowed list ─────────
 
   /**
+   * Keeps only entries whose {@link LogEntry#level()} is at least {@code minimum} — i.e. equal to
+   * or higher severity than {@code minimum}.
+   *
+   * <p>Severity order (lowest to highest): TRACE &lt; DEBUG &lt; INFO &lt; WARN &lt; ERROR.
+   *
+   * @param minimum the lowest SLF4J level to include
+   * @return new {@code LogsAssert} over the filtered list
+   */
+  public LogsAssert atLevelAtLeast(Level minimum) {
+    return new LogsAssert(
+        actual.stream().filter(e -> e.level().toInt() >= minimum.toInt()).toList());
+  }
+
+  /**
    * Keeps only entries whose {@link LogEntry#level()} exactly matches {@code level}.
    *
    * @param level the SLF4J level to filter by
@@ -100,8 +114,8 @@ public class LogsAssert extends AbstractAssert<LogsAssert, List<LogEntry>> {
   public LogsAssert hasSize(int expected) {
     if (actual.size() != expected) {
       failWithMessage(
-          "Expected %d log entries but found %d.%nCaptured entries:%n%s",
-          expected, actual.size(), formatEntries(actual));
+          "Expected %d log entr%s but found %d.%nCaptured entries:%n%s",
+          expected, expected == 1 ? "y" : "ies", actual.size(), formatEntries(actual));
     }
     return this;
   }

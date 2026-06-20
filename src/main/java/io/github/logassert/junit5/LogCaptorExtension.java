@@ -286,7 +286,7 @@ public final class LogCaptorExtension
       }
       current = current.getParent().orElse(null);
     }
-    throw new IllegalStateException(
+    throw new LogCaptorConfigurationException(
         "[log-assert] LogCaptorImpl not found in ExtensionContext store. "
             + "Did you register LogCaptorExtension correctly?");
   }
