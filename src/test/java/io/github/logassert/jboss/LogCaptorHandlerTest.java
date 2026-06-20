@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.logassert.core.LogEntry;
 import java.io.IOException;
 import java.util.List;
-import org.slf4j.MDC;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,15 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.slf4j.event.Level;
 
 /**
  * Integration tests for the JBoss Log Manager capture pipeline.
  *
  * <p>All tests use real SLF4J loggers routed through {@code slf4j-jboss-logmanager} → JBoss Log
- * Manager → {@link LogCaptorHandler}. The surefire configuration sets
- * {@code java.util.logging.manager=org.jboss.logmanager.LogManager} so the JBoss manager is
- * active for the entire test JVM.
+ * Manager → {@link LogCaptorHandler}. The surefire configuration sets {@code
+ * java.util.logging.manager=org.jboss.logmanager.LogManager} so the JBoss manager is active for the
+ * entire test JVM.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class LogCaptorHandlerTest {
@@ -242,7 +242,9 @@ class LogCaptorHandlerTest {
     log.debug("fine mapped");
 
     List<LogEntry> entries =
-        captor.getLogs().stream().filter(e -> e.formattedMessage().contains("fine mapped")).toList();
+        captor.getLogs().stream()
+            .filter(e -> e.formattedMessage().contains("fine mapped"))
+            .toList();
     assertThat(entries).hasSize(1);
     assertThat(entries.get(0).level()).isEqualTo(Level.DEBUG);
   }

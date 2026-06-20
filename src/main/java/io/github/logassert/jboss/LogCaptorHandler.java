@@ -33,8 +33,8 @@ public final class LogCaptorHandler extends ExtHandler {
   }
 
   /**
-   * Called by JBoss Log Manager for each loggable record. Converts the record to a {@link
-   * LogEntry} snapshot and appends it to the store.
+   * Called by JBoss Log Manager for each loggable record. Converts the record to a {@link LogEntry}
+   * snapshot and appends it to the store.
    *
    * @param record the log record; skipped if {@code null} or not loggable
    */
@@ -101,8 +101,7 @@ public final class LogCaptorHandler extends ExtHandler {
   }
 
   /**
-   * Returns a defensive copy of the MDC map from {@code record}, or an empty map if the call
-   * fails.
+   * Returns a defensive copy of the MDC map from {@code record}, or an empty map if the call fails.
    *
    * <p>MDC access can throw in edge cases (e.g. partially torn-down thread-local state), so we
    * guard defensively.

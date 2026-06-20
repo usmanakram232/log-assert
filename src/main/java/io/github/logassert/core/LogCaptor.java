@@ -24,11 +24,14 @@ import org.slf4j.event.Level;
 public interface LogCaptor extends AutoCloseable {
 
   /**
-   * Returns an unmodifiable snapshot of all log entries captured so far.
+   * Returns an unmodifiable snapshot of all log entries captured at the time of this call.
    *
-   * <p>The returned list is a point-in-time copy; entries logged after this call do not affect it.
+   * <p>Subsequent log statements do <em>not</em> affect the returned list. Call this method again
+   * to get a fresh snapshot reflecting any entries logged after the previous call.
    *
-   * @return immutable list of captured entries, newest entries last; never {@code null}
+   * <p>The list is ordered oldest-first (chronological insertion order).
+   *
+   * @return immutable snapshot of captured entries; never {@code null}
    */
   List<LogEntry> getLogs();
 
