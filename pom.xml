@@ -7,7 +7,7 @@
 
   <groupId>io.github.usmanakram232</groupId>
   <artifactId>log-assert</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>log-assert</name>
@@ -54,6 +54,8 @@
     <quarkus.junit5.version>3.17.7</quarkus.junit5.version>
     <!-- Reproducible builds: timestamp fixed at release commit -->
     <project.build.outputTimestamp>2026-06-20T00:00:00Z</project.build.outputTimestamp>
+    <!-- SCM tag used by maven-release-plugin -->
+    <scm.tag>HEAD</scm.tag>
   </properties>
 
   <dependencies>
@@ -219,6 +221,38 @@
         <groupId>com.spotify.fmt</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.25</version>
+      </plugin>
+
+      <!--
+        maven-release-plugin
+        Usage:
+          mvn release:prepare -s settings-central.xml   (tags + version bumps)
+          mvn release:perform -s settings-central.xml   (deploys the tagged commit)
+        Or in one shot:
+          mvn release:prepare release:perform -s settings-central.xml
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <!-- Activate GPG signing + Central publishing during release:perform -->
+          <releaseProfiles>release</releaseProfiles>
+          <!-- Goal executed during release:perform after checkout -->
+          <goals>deploy</goals>
+          <!-- Tag format: v1.0.3, v1.1.0, etc. -->
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <!-- Run tests + format check before tagging; skip signing during prepare -->
+          <preparationGoals>clean verify fmt:check -P !release</preparationGoals>
+          <!-- Commit message prefixes -->
+          <scmCommentPrefix>[release]</scmCommentPrefix>
+          <scmReleaseCommitComment>chore: release @{releaseLabel}</scmReleaseCommitComment>
+          <scmDevelopmentCommitComment>chore: prepare for next development iteration</scmDevelopmentCommitComment>
+          <!-- Use local checkout for speed — avoids full SCM clone during perform -->
+          <localCheckout>true</localCheckout>
+          <!-- Push tag and version-bump commits as one batch -->
+          <pushChanges>true</pushChanges>
+        </configuration>
       </plugin>
 
     </plugins>
