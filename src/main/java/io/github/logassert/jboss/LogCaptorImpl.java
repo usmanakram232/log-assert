@@ -8,8 +8,8 @@ import org.slf4j.event.Level;
 /**
  * JBoss Log Manager implementation of {@link LogCaptor}.
  *
- * <p>Installs a {@link LogCaptorHandler} on the JBoss root logger, captures all emitted log
- * records into a {@link LogCaptorStore}, and exposes them for assertion. The original log-level
+ * <p>Installs a {@link LogCaptorHandler} on the JBoss root logger, captures all emitted log records
+ * into a {@link LogCaptorStore}, and exposes them for assertion. The original log-level
  * configuration is restored when {@link #close()} (or {@link #resetConfiguration()}) is called.
  *
  * <p>Typical lifecycle managed by a JUnit 5 extension:
@@ -105,8 +105,8 @@ public final class LogCaptorImpl implements LogCaptor {
   /**
    * {@inheritDoc}
    *
-   * <p>Saves the current root-logger level on the first call (so it can be restored later) and
-   * then sets the level to the JUL equivalent of {@code level}. Subsequent calls in the same scope
+   * <p>Saves the current root-logger level on the first call (so it can be restored later) and then
+   * sets the level to the JUL equivalent of {@code level}. Subsequent calls in the same scope
    * update the level without re-saving.
    */
   @Override

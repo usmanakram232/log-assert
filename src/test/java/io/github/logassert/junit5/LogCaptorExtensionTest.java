@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests for {@link LogCaptorExtension} — uses the JUnit {@link Launcher} API to run synthetic
- * inner test classes and verify extension behaviour from the outside.
+ * Tests for {@link LogCaptorExtension} — uses the JUnit {@link Launcher} API to run synthetic inner
+ * test classes and verify extension behaviour from the outside.
  */
 class LogCaptorExtensionTest {
 
@@ -41,9 +41,7 @@ class LogCaptorExtensionTest {
   @Test
   void field_injection_works() {
     SummaryGeneratingListener listener = runInner(InnerTestWithFieldInjection.class);
-    assertThat(listener.getSummary().getFailures())
-        .as("inner test failures")
-        .isEmpty();
+    assertThat(listener.getSummary().getFailures()).as("inner test failures").isEmpty();
     assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(1);
   }
 
@@ -75,9 +73,7 @@ class LogCaptorExtensionTest {
   @Test
   void logs_auto_cleared_between_tests() {
     SummaryGeneratingListener listener = runInner(InnerTestAutoClear.class);
-    assertThat(listener.getSummary().getFailures())
-        .as("auto-clear inner test failures")
-        .isEmpty();
+    assertThat(listener.getSummary().getFailures()).as("auto-clear inner test failures").isEmpty();
     assertThat(listener.getSummary().getTestsSucceededCount()).isEqualTo(2);
   }
 
@@ -111,8 +107,7 @@ class LogCaptorExtensionTest {
   @ExtendWith(LogCaptorExtension.class)
   @PrintLogsOnFailure
   static class InnerTestPrintLogsOnFailure {
-    private static final Logger log =
-        LoggerFactory.getLogger(InnerTestPrintLogsOnFailure.class);
+    private static final Logger log = LoggerFactory.getLogger(InnerTestPrintLogsOnFailure.class);
 
     @Test
     void intentionally_failing_test() {
@@ -131,8 +126,7 @@ class LogCaptorExtensionTest {
         .isEqualTo(1);
     // The important assertion: the failure is the intentional AssertionError,
     // not a secondary failure from the extension's testFailed() callback.
-    String firstFailureMsg =
-        listener.getSummary().getFailures().get(0).getException().getMessage();
+    String firstFailureMsg = listener.getSummary().getFailures().get(0).getException().getMessage();
     assertThat(firstFailureMsg).contains("intentional failure");
   }
 
@@ -141,8 +135,7 @@ class LogCaptorExtensionTest {
   @ExtendWith(LogCaptorExtension.class)
   @FailOnUncheckedError
   static class InnerTestFailOnUncheckedError {
-    private static final Logger log =
-        LoggerFactory.getLogger(InnerTestFailOnUncheckedError.class);
+    private static final Logger log = LoggerFactory.getLogger(InnerTestFailOnUncheckedError.class);
 
     @Test
     void logs_an_error_but_does_not_assert_on_it() {
@@ -157,8 +150,7 @@ class LogCaptorExtensionTest {
     assertThat(listener.getSummary().getTestsFailedCount())
         .as("@FailOnUncheckedError should cause one failure")
         .isEqualTo(1);
-    String failureMsg =
-        listener.getSummary().getFailures().get(0).getException().getMessage();
+    String failureMsg = listener.getSummary().getFailures().get(0).getException().getMessage();
     assertThat(failureMsg).contains("@FailOnUncheckedError");
     assertThat(failureMsg).contains("ERROR");
   }
@@ -219,9 +211,7 @@ class LogCaptorExtensionTest {
 
   private static SummaryGeneratingListener runInner(Class<?> testClass) {
     LauncherDiscoveryRequest request =
-        LauncherDiscoveryRequestBuilder.request()
-            .selectors(selectClass(testClass))
-            .build();
+        LauncherDiscoveryRequestBuilder.request().selectors(selectClass(testClass)).build();
     SummaryGeneratingListener listener = new SummaryGeneratingListener();
     Launcher launcher = LauncherFactory.create();
     launcher.discover(request); // warm up discovery

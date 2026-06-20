@@ -1,8 +1,8 @@
 package io.github.logassert.junit5;
 
 /**
- * Thrown by {@link LogCaptorExtension} when the log capture infrastructure cannot be verified
- * after installation.
+ * Thrown by {@link LogCaptorExtension} when the log capture infrastructure cannot be verified after
+ * installation.
  *
  * <p>The most common cause is another component resetting the root logger's handler list after
  * {@link LogCaptorExtension} has installed its handler. In Quarkus environments this can happen

@@ -31,7 +31,8 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * class MyTest { ... }
  * }</pre>
  *
- * or via a static field:
+ * or via a static field (required for Quarkus / any framework that re-initialises the log manager
+ * after the test class is loaded):
  *
  * <pre>{@code
  * @RegisterExtension
@@ -41,13 +42,17 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * <p><strong>Lifecycle:</strong>
  *
  * <ul>
- *   <li>{@code beforeAll} — installs the log capture handler and runs a self-test probe.
+ *   <li>{@code beforeAll} — detaches console handlers, installs the capture handler, runs a
+ *       self-test probe to verify capture is working.
  *   <li>{@code beforeEach} — clears captured logs, resets MDC, injects {@link InjectLogCaptor}
- *       fields.
- *   <li>{@code afterEach} — checks {@link FailOnUncheckedError}, resets level overrides.
+ *       fields, and (when {@link EchoLogs} is present) re-attaches console handlers so the test
+ *       produces visible console output.
+ *   <li>{@code afterEach} — resets any level overrides, removes re-attached console handlers when
+ *       {@link EchoLogs} was active, and checks {@link FailOnUncheckedError}.
  *   <li>{@code testFailed} — dumps logs to {@code System.err} when {@link PrintLogsOnFailure} is
  *       present.
- *   <li>{@code afterAll} — uninstalls the handler and re-attaches any console handlers.
+ *   <li>{@code afterAll} — uninstalls the capture handler and permanently re-attaches the console
+ *       handlers that were removed in {@code beforeAll}.
  * </ul>
  *
  * <p>Supports {@link LogCaptor} as a test method parameter via {@link ParameterResolver}.
@@ -88,8 +93,7 @@ public final class LogCaptorExtension
     }
 
     // 3. Detach console/stream handlers from the root logger to suppress test noise.
-    java.util.logging.Logger root =
-        java.util.logging.LogManager.getLogManager().getLogger("");
+    java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
     List<java.util.logging.Handler> consoleHandlers =
         Arrays.stream(root.getHandlers())
             .filter(
@@ -137,6 +141,15 @@ public final class LogCaptorExtension
     org.slf4j.MDC.clear();
     // Inject @InjectLogCaptor fields on the test instance.
     ctx.getTestInstance().ifPresent(instance -> injectFields(instance, captor));
+    // @EchoLogs: if requested for this test, temporarily re-attach the console handlers so
+    // that log output is visible on the console during this test.
+    if (hasAnnotation(ctx, EchoLogs.class)) {
+      List<java.util.logging.Handler> consoleHandlers = getConsoleHandlers(ctx);
+      if (consoleHandlers != null && !consoleHandlers.isEmpty()) {
+        java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
+        consoleHandlers.forEach(root::addHandler);
+      }
+    }
   }
 
   // ── AfterEachCallback ──────────────────────────────────────────────────────
@@ -146,19 +159,24 @@ public final class LogCaptorExtension
     LogCaptorImpl captor = getCaptor(ctx);
     // Always reset level overrides first.
     captor.resetConfiguration();
+    // @EchoLogs: remove the console handlers that were re-attached in beforeEach so that
+    // subsequent tests do not receive console output (unless they also have @EchoLogs).
+    if (hasAnnotation(ctx, EchoLogs.class)) {
+      List<java.util.logging.Handler> consoleHandlers = getConsoleHandlers(ctx);
+      if (consoleHandlers != null && !consoleHandlers.isEmpty()) {
+        java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
+        consoleHandlers.forEach(root::removeHandler);
+      }
+    }
     // @FailOnUncheckedError: fail if any ERROR entries were not consumed by assertions.
     if (hasAnnotation(ctx, FailOnUncheckedError.class)) {
       List<LogEntry> errors =
-          captor.getLogs().stream()
-              .filter(e -> e.level() == org.slf4j.event.Level.ERROR)
-              .toList();
+          captor.getLogs().stream().filter(e -> e.level() == org.slf4j.event.Level.ERROR).toList();
       if (!errors.isEmpty()) {
         throw new AssertionError(
             String.format(
                 "[log-assert] @FailOnUncheckedError: %d ERROR log entr%s were not asserted:%n%s",
-                errors.size(),
-                errors.size() == 1 ? "y" : "ies",
-                formatEntries(errors)));
+                errors.size(), errors.size() == 1 ? "y" : "ies", formatEntries(errors)));
       }
     }
   }
@@ -168,8 +186,7 @@ public final class LogCaptorExtension
   @Override
   @SuppressWarnings("unchecked")
   public void afterAll(ExtensionContext ctx) {
-    java.util.logging.Logger root =
-        java.util.logging.LogManager.getLogManager().getLogger("");
+    java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
     // Use try/finally to guarantee console handlers are re-attached even if uninstall() throws.
     try {
       LogCaptorImpl captor = (LogCaptorImpl) ctx.getStore(NAMESPACE).get(CAPTOR_KEY);
@@ -235,6 +252,24 @@ public final class LogCaptorExtension
   }
 
   /**
+   * Retrieves the console handlers stashed during {@code beforeAll}, walking the parent chain.
+   *
+   * @return the handler list, or {@code null} if not found (should never happen in normal use)
+   */
+  @SuppressWarnings("unchecked")
+  private List<java.util.logging.Handler> getConsoleHandlers(ExtensionContext ctx) {
+    ExtensionContext current = ctx;
+    while (current != null) {
+      Object value = current.getStore(NAMESPACE).get(CONSOLE_HANDLERS_KEY);
+      if (value != null) {
+        return (List<java.util.logging.Handler>) value;
+      }
+      current = current.getParent().orElse(null);
+    }
+    return null;
+  }
+
+  /**
    * Injects the captor into all {@link InjectLogCaptor}-annotated {@link LogCaptor} fields on
    * {@code testInstance}, walking the class hierarchy.
    */
@@ -261,11 +296,9 @@ public final class LogCaptorExtension
    * Returns {@code true} if the annotation is present on the test method or test class (in that
    * order of precedence).
    */
-  private boolean hasAnnotation(
-      ExtensionContext ctx, Class<? extends Annotation> annotation) {
+  private boolean hasAnnotation(ExtensionContext ctx, Class<? extends Annotation> annotation) {
     Optional<? extends Annotation> onMethod =
-        ctx.getTestMethod()
-            .flatMap(m -> AnnotationSupport.findAnnotation(m, annotation));
+        ctx.getTestMethod().flatMap(m -> AnnotationSupport.findAnnotation(m, annotation));
     if (onMethod.isPresent()) {
       return true;
     }
@@ -286,8 +319,7 @@ public final class LogCaptorExtension
   }
 
   private static String formatEntry(LogEntry e) {
-    String base =
-        String.format("  [%s] %s - %s", e.level(), e.loggerName(), e.formattedMessage());
+    String base = String.format("  [%s] %s - %s", e.level(), e.loggerName(), e.formattedMessage());
     if (e.throwable() != null) {
       base += " (" + e.throwable().simpleClassName() + ")";
     }
