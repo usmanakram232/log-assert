@@ -63,8 +63,8 @@ public class LogEntryAssert extends AbstractAssert<LogEntryAssert, LogEntry> {
   }
 
   /**
-   * Asserts that the formatted message matches {@code regex} (using {@link Pattern#find()}, not
-   * {@link Pattern#matches()}).
+   * Asserts that the formatted message matches {@code regex} (using {@link
+   * java.util.regex.Matcher#find()}, not {@link java.util.regex.Matcher#matches()}).
    *
    * @param regex the compiled pattern to search for
    * @return {@code this}

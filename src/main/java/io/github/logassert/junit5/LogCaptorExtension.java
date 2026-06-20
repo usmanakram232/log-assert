@@ -157,9 +157,7 @@ public final class LogCaptorExtension
                             .flatMap(c -> AnnotationSupport.findAnnotation(c, EchoLogs.class)))
                 .orElse(null);
         java.util.logging.Level julLevel =
-            echoLogs != null
-                ? toJulLevel(echoLogs.minimumLevel())
-                : java.util.logging.Level.ALL;
+            echoLogs != null ? toJulLevel(echoLogs.minimumLevel()) : java.util.logging.Level.ALL;
         java.util.logging.Logger root = java.util.logging.LogManager.getLogManager().getLogger("");
         for (java.util.logging.Handler h : consoleHandlers) {
           ctx.getStore(NAMESPACE)
@@ -183,8 +181,7 @@ public final class LogCaptorExtension
       // If the test already failed for another reason, don't pile on with a second assertion error.
       // This also means tests that asserted their ERROR entries won't fail here — they should call
       // logCaptor.clearLogs() after asserting if they want to suppress this check.
-      if (hasAnnotation(ctx, FailOnUncheckedError.class)
-          && ctx.getExecutionException().isEmpty()) {
+      if (hasAnnotation(ctx, FailOnUncheckedError.class) && ctx.getExecutionException().isEmpty()) {
         List<LogEntry> errors =
             captor.getLogs().stream()
                 .filter(e -> e.level() == org.slf4j.event.Level.ERROR)
