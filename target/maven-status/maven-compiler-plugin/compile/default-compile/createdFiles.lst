@@ -1,0 +1,6 @@
+io/github/logassert/core/ThrowableInfo.class
+io/github/logassert/assertj/LogEntryAssert.class
+io/github/logassert/assertj/LogsAssert.class
+io/github/logassert/core/LogEntry.class
+io/github/logassert/core/LogCaptor.class
+io/github/logassert/assertj/LogCaptorAssertions.class
